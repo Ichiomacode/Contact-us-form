@@ -1,0 +1,42 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+body{
+  background: rgb(85, 85, 87);
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+  }
+
+.all{
+  background-color: rgb(161, 139, 139);
+    border-radius: 5%;
+    padding: 20%;
+    margin-left: -90%;
+    width: 250%;
+    margin-top: 20px;
+    
+    
+}
+button{
+  width: 20%;
+    cursor: pointer;
+    padding: 10px;
+    
+    color: black;
+    margin-left: 2%;
+    border-radius: 10px;
+}
+label{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 5px;
+  height: 30px;
+  border-radius: 5px;
+}
+
+.text-area{
+  height: 20px;
+}
