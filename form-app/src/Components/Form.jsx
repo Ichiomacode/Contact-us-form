@@ -1,102 +1,84 @@
-import React, { useState } from 'react';
-import * as Yup from 'yup';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import axios from 'axios'
+import React, { useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await axios.post('https://my-json-server.typicode.com/tundeojediran/contacts-api-server/inquiries', {
-      name: name,
-      email: email,
-      message: message
-    });
-    console.log(response);
-    // reset form fields
-  } catch (error) {
-    console.error(error);
-  }
-};
 const ContactForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState(null);
 
   const initialValues = {
-    name: '',
-    email: '',
-    message: '',
+    name: "",
+    email: "",
+    message: "",
   };
 
-  const validationSchema = Yup.object({
-    name: Yup.string().required('Required'),
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required("Name is required"),
     email: Yup.string()
-      .email('Invalid email address')
-      .required('Required'),
-    message: Yup.string().required('Required'),
+      .email("Invalid email")
+      .required("Email is required"),
+    message: Yup.string().required("Message is required"),
   });
 
-  const handleSubmit = (values, { resetForm }) => {
-    setIsSubmitting(true);
-    setIsSuccess(false);
-    setIsError(false);
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    try {
+      const response = await axios.post("https://my-json-server.typicode.com/tundeojediran/contacts-api-server/inquiries", values);
+      console.log(response.data); // Check response data in console
+      setIsSubmitted(true); // Set state to indicate successful submission
 
-    // For a successful submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      resetForm();
-    }, 2000);
+      // Reset form fields after a 3 second delay
+      setTimeout(() => {
+        resetForm();
+      }, 3000);
+    } catch (error) {
+      console.error(error);
+      setError("Error submitting form. Please try again later.");
+    }
+    setSubmitting(false);
   };
 
   return (
-    <div className = "all">
-      <h2>Contact Us</h2>
+    <div>
+      {error && <p className="error">{error}</p>}
+      {isSubmitted && (
+        <p className="success">Thank you for Contacting us!</p>
+      )}
+      <h1>Contact Us</h1>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({ isSubmitting }) => (
-          <Form onSubmit={handleSubmit}>
-            <div className='input'>
-              <label htmlFor="name" className='form-label'>Name</label>
-              <Field type="text" name="name" />
-              <ErrorMessage name="name" component="div" />
-            </div>
-
+          <Form>
             <div>
-              <label htmlFor="email"className='form-label' >Email</label>
-              <Field type="email" name="email" />
-              <ErrorMessage name="email" component="div" />
+              <label htmlFor="name">Name</label>
+              <Field type="text" id="name" name="name" />
+              <ErrorMessage name="name" component="div" className="error" />
             </div>
-
             <div>
-              <label className='text-area' htmlFor="message">Message</label>
-              <Field as="textarea" name="message" />
-              <ErrorMessage name="message" component="div" />
+              <label htmlFor="email">Email</label>
+              <Field type="email" id="email" name="email" />
+              <ErrorMessage name="email" component="div" className="error" />
             </div>
-
+            <div>
+              <label htmlFor="message">Message</label>
+              <Field as="textarea" id="message" name="message" />
+              <ErrorMessage
+                name="message"
+                component="div"
+                className="error"
+              />
+            </div>
             <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting...' : 'Submit'}
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
           </Form>
         )}
       </Formik>
-
-      {isSuccess && (
-        <div style={{ color: 'green' }}>Your message was sent successfully!</div>
-      )}
-
-      {isError && (
-        <div style={{ color: 'red' }}>
-          There was an error submitting your message. Please try again later.
-        </div>
-      )}
     </div>
   );
 };
 
 export default ContactForm;
-
